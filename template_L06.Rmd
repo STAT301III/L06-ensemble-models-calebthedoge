@@ -1,0 +1,56 @@
+---
+title: "L06 Ensemble Models"
+subtitle: "Data Science III (STAT 301-3)"
+author: "YOUR NAMR"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    highlight: "tango"
+---
+
+## Overview
+
+The main goal of this lab is to introduce and build an ensemble using `{stacks}`. Reading and reviewing `{stacks}`'s [homepage](https://stacks.tidymodels.org/index.html){target="_blank"} and the [Getting Started With tacks vignette](https://stacks.tidymodels.org/articles/basics.html){target="_blank"}. The latter of which will be very helpful since we will be following the general workflow outlined in the vignette.
+
+## Dataset
+
+We will be utilizing `wildfires.csv` dataset contained in the **data** subdirectory. `wildfires_codebook.html` provides a quick overview of the data which is where students should begin.
+
+## Instructions
+
+We want to build an ensemble model to predict the number of hectares burned by a wildfire (`burned`). 
+
+We will use all available predictors except for (`wlf`) which we used as an outcome variable in Lab 2. 
+
+We will build the ensemble model by blending nearest neighbor
+models, a linear regression, and support vector machines using radial basis function kernel.
+
+Much of the general code has been setup for you, but there sections where you need to add or complete the code. You are also encouraged to add extra notes and comments for your own notes/reference.
+
+### Steps
+
+#### `general_setup.R`
+
+Work through `general_setup.R` to complete the initial setup/organization of the data. There is one section of code left blank for exploring the outcome and checking missingness which should be completed. 
+
+#### Tuning/fitting scripts
+
+The next step is to define the all candidate models and tune/fit them to resamples. Note that this framework for this process is *almost* exactly the same as we have been following for tuning and fitting to resamples. 
+
+There is one essential argument to add to `tune_grid()` or `fit_resamples()`. Students will need to add this argument where appropriate in the `knn_tunning.R`, `lin_reg_fitting.R` and `svm_tuning.R` scripts.
+
+#### Building the ensemble model
+
+The `ensemble_model.R` script gets the students started, but most of the code used to train and assess the ensemble model is left blank. There are headings to help guide students through this process. The [Getting Started With tacks vignette](https://stacks.tidymodels.org/articles/basics.html){target="_blank"} will be especially useful for this step.
+
+## What should be turned in
+
+Include a short description/exploration of the ensemble model. How many total models were considered? How many were ultimately included in the ensemble model and their weights? Assess the performance of the ensemble model on the test set. Compare the ensemble models performance to its member models. 
+
+Graphs, tables, and a short paragraph(s) will be useful for this. Students likely have most of this. A link to your github repo should also be included.
+
+## Github Repo Link
+
+[LINK TEXT](YOUR-GITHUB-URL){target="_blank"}
+
