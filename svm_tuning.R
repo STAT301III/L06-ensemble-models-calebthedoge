@@ -39,7 +39,7 @@ svm_res <- svm_workflow %>%
   tune_grid(
     resamples = wildfires_folds,
     grid = svm_grid,
-    # NEED TO ADD AN ARGUMENT HERE
+    control = stacks::control_stack_grid()
   )
 
 # Write out results & workflow

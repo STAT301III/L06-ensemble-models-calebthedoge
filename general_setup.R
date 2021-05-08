@@ -21,7 +21,16 @@ wildfires_dat <- read_csv("data/wildfires.csv") %>%
 # Data checks ----
 # Outcome/target variable
 
+wildfires_dat %>% skip_without_charts()
 
+ggplot(data = wildfires_dat, aes(x = burned)) +
+  geom_boxplot()
+
+ggplot(data = wildfires_dat, aes(x = burned)) +
+  geom_density()
+
+ggplot(data = wildfires_dat, aes(x = burned, y = "Group")) +
+  geom_violin()
 
 
 

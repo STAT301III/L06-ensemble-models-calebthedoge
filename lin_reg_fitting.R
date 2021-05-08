@@ -27,7 +27,7 @@ lin_reg_workflow <- workflow() %>%
 lin_reg_res <- lin_reg_workflow %>%
   fit_resamples(
     resamples = wildfires_folds,
-    # NEED TO ADD AN ARGUMENT HERE
+    control = stacks::control_stack_resamples()
     )
 
 # Write out results & workflow

@@ -3,7 +3,7 @@
 # Load package(s) ----
 library(tidyverse)
 library(tidymodels)
-library(stacks)
+#library(stacks) /commented out taken directly from stacks
 
 # Handle common conflicts
 tidymodels_prefer()
@@ -42,7 +42,7 @@ knn_res <- knn_workflow %>%
   tune_grid(
     resamples = wildfires_folds,
     grid = knn_grid,
-    # NEED TO ADD AN ARGUMENT HERE
+    control = stacks::control_stack_grid()
   )
 
 # Write out results & workflow
