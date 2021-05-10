@@ -53,14 +53,26 @@ wildfires_fit
 
 It appears that the ensemble model obtains an RMSE of 72.9 and an R2 of 0.945.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # Define a metric set
 wildfires_metric <- metric_set(rmse, rsq)
 
 # Evaluate the ensemble model
 wildfires_fit %>% 
   wildfires_metric(truth = burned, estimate = .pred)
+
+ggplot(
+  data = wildfires_fit,
+  mapping = aes(burned, .pred)
+) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0) +
+  geom_smooth() +
+  theme_minimal() +
+  coord_obs_pred()
 ```
+
+The graph above shows a that the fit is close to the linear line imposed, besides the area where it tapers off at the top right where there is an  outlier.
 
 When comparing the ensemble model’s performance to its member models, we determine that the ensemble model obtained the lowest RMSE when compared to each of the member models individually. The model closest to achieving the RMSE of the ensemble model was the `svm_res_1_20`, which obtained an RMSE estimate of 73.4.
 
@@ -75,7 +87,8 @@ map_dfr(member_preds, rmse, truth = burned, data = member_preds) %>%
   mutate(member = colnames(member_preds))
 ```
 
+
 ## Github Repo Link
 
-[LINK TEXT](YOUR-GITHUB-URL){target="_blank"}
+[https://github.com/STAT301III/L06-ensemble-models-calebthedoge](https://github.com/STAT301III/L06-ensemble-models-calebthedoge){target="_blank"}
 

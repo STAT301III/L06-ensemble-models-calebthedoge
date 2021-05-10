@@ -21,8 +21,6 @@ wildfires_dat <- read_csv("data/wildfires.csv") %>%
 # Data checks ----
 # Outcome/target variable
 
-wildfires_dat %>% skip_without_charts()
-
 ggplot(data = wildfires_dat, aes(x = burned)) +
   geom_boxplot()
 
@@ -43,6 +41,7 @@ wildfires_split <- wildfires_dat %>%
   initial_split(prop = 0.75, strata = burned)
 
 wildfires_train <- training(wildfires_split)
+
 
 # Folds
 wildfires_folds <- vfold_cv(wildfires_train, v = 5, repeats = 3, strata = burned)
