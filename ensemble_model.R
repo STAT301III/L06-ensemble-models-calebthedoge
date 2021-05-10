@@ -38,15 +38,26 @@ wildfires_blend <- wildfires_data_stack %>%
 save(wildfires_blend, file = "model_info/wildfires_blend.rda")
 
 # Explore the blended model stack
-wildfires_blend
 
 autoplot(wildfires_blend, type = "weights") +
   theme_minimal( )
 
-# fit to ensemble to entire training set ----
+autoplot(wildfires_blend, type = "members") +
+  theme_minimal()
 
+# fit to ensemble to entire training set ----
+wildfires_final <- wildfires_blend %>%
+  fit_members()
 
 # Save trained ensemble model for reproducibility & easy reference (Rmd report)
-
+save(wildfires_final, file = "model_info/wildfires_final.rda")
 
 # Explore and assess trained ensemble model
+collect_parameters(wildfires_final, "svm_res")
+
+wildfires_final
+autoplot(wildfires_final, type = "weights") +
+  theme_minimal( )
+
+autoplot(wildfires_final, type = "members") +
+  theme_minimal()

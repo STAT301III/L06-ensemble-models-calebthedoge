@@ -1,7 +1,7 @@
 ---
 title: "L06 Ensemble Models"
 subtitle: "Data Science III (STAT 301-3)"
-author: "YOUR NAMR"
+author: "Caleb Li"
 output: 
   html_document:
     toc: true
@@ -9,46 +9,71 @@ output:
     highlight: "tango"
 ---
 
-## Overview
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Load package(s) ----
+library(tidymodels)
+library(tidyverse)
+library(stacks)
 
-The main goal of this lab is to introduce and build an ensemble using `{stacks}`. Reading and reviewing `{stacks}`'s [homepage](https://stacks.tidymodels.org/index.html){target="_blank"} and the [Getting Started With tacks vignette](https://stacks.tidymodels.org/articles/basics.html){target="_blank"}. The latter of which will be very helpful since we will be following the general workflow outlined in the vignette.
+load("model_info/wildfires_final.rda")
+load("model_info/wildfires_blend.rda")
+load("data/wildfires_split.rda")
+wildfires_test <- wildfires_split %>% testing()
+```
 
-## Dataset
 
-We will be utilizing `wildfires.csv` dataset contained in the **data** subdirectory. `wildfires_codebook.html` provides a quick overview of the data which is where students should begin.
+## Ensemble Model
+In our ensemble model, there were 41 candidate models stemming from 3 model types: the K-nearest neighbors, support vector machines using radial basis function kernel, and a linear regression. The final ensemble model retained 10 models: `svm_res_1_16` with a weight of 2.33, `lin_reg_res_1_1` with a weight of 0.838, `svm_res_1_23` with a weight of 0.494, `svm_res_1_20` with a weight of 0.111, `svm_res_1_17` with a weight of 0.0856, `knn_res_1_12` with a weight of 0.0143,`knn_res_1_13` with a weight of 0.0100,  `knn_res_1_14` with a weight of 0.00819, `knn_res_1_11` with a weight of 0.00596, `knn_res_1_10` with 0.00381
 
-## Instructions
+```{r}
+# Load package(s) ----
+wildfires_final
+```
 
-We want to build an ensemble model to predict the number of hectares burned by a wildfire (`burned`). 
+```{r}
+# Show the relationship between minimizing the number of members with rmse and rsq
+autoplot(wildfires_blend, type = "members") +
+  theme_minimal()
 
-We will use all available predictors except for (`wlf`) which we used as an outcome variable in Lab 2. 
+# Plot the weights of the models that were included in the ensemble model
+autoplot(wildfires_blend, type = "weights") +
+  theme_minimal()
+```
 
-We will build the ensemble model by blending nearest neighbor
-models, a linear regression, and support vector machines using radial basis function kernel.
+After fitting the data to the entire training set, we also obtain the predictions applied to the test set.
 
-Much of the general code has been setup for you, but there sections where you need to add or complete the code. You are also encouraged to add extra notes and comments for your own notes/reference.
 
-### Steps
+```{r}
+# Obtain the predictions on the test set
+wildfires_fit <- wildfires_test %>%
+  bind_cols(predict(wildfires_final, .)) %>%
+  select(burned, .pred)
+wildfires_fit
+```
 
-#### `general_setup.R`
+It appears that the ensemble model obtains an RMSE of 72.9 and an R2 of 0.945.
 
-Work through `general_setup.R` to complete the initial setup/organization of the data. There is one section of code left blank for exploring the outcome and checking missingness which should be completed. 
+```{r}
+# Define a metric set
+wildfires_metric <- metric_set(rmse, rsq)
 
-#### Tuning/fitting scripts
+# Evaluate the ensemble model
+wildfires_fit %>% 
+  wildfires_metric(truth = burned, estimate = .pred)
+```
 
-The next step is to define the all candidate models and tune/fit them to resamples. Note that this framework for this process is *almost* exactly the same as we have been following for tuning and fitting to resamples. 
+When comparing the ensemble model’s performance to its member models, we determine that the ensemble model obtained the lowest RMSE when compared to each of the member models individually. The model closest to achieving the RMSE of the ensemble model was the `svm_res_1_20`, which obtained an RMSE estimate of 73.4.
 
-There is one essential argument to add to `tune_grid()` or `fit_resamples()`. Students will need to add this argument where appropriate in the `knn_tunning.R`, `lin_reg_fitting.R` and `svm_tuning.R` scripts.
+```{r}
+# Obtain predictions for each of the individual member models
+member_preds <- wildfires_test %>%
+  select(burned) %>%
+  bind_cols(predict(wildfires_final, wildfires_test, members = TRUE))
 
-#### Building the ensemble model
-
-The `ensemble_model.R` script gets the students started, but most of the code used to train and assess the ensemble model is left blank. There are headings to help guide students through this process. The [Getting Started With tacks vignette](https://stacks.tidymodels.org/articles/basics.html){target="_blank"} will be especially useful for this step.
-
-## What should be turned in
-
-Include a short description/exploration of the ensemble model. How many total models were considered? How many were ultimately included in the ensemble model and their weights? Assess the performance of the ensemble model on the test set. Compare the ensemble models performance to its member models. 
-
-Graphs, tables, and a short paragraph(s) will be useful for this. Students likely have most of this. A link to your github repo should also be included.
+# Evaluate each of the individual models
+map_dfr(member_preds, rmse, truth = burned, data = member_preds) %>%
+  mutate(member = colnames(member_preds))
+```
 
 ## Github Repo Link
 
